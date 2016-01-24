@@ -1,0 +1,8 @@
+name "clichat"
+
+dependency "vibe-d" version="0.7.26"
+
+configuration "app" {
+	targetType "executable"
+	targetPath "bin/"
+}

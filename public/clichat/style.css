@@ -1,0 +1,58 @@
+html, body
+{
+	margin: 0;
+	padding: 0;
+}
+
+body
+{
+	background-color: #000;
+	color: #808080;
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+.messageFrame
+{
+	position: absolute;
+	top: 200px;
+	bottom: 30px;
+	left: 40px;
+	right: 40px;
+}
+
+.message
+{
+	text-align: center;
+	vertical-align: middle;
+	width: 100%;
+	min-height: 1em;
+	font-size: 40px;
+	word-wrap: break-word;
+
+	text-shadow: 0 0 15px #11D;
+}
+
+#userCount
+{
+	position: absolute;
+	bottom: 0;
+	right: 4px;
+}
+
+.inputFrame
+{
+	position: absolute;
+	left: 16px;
+	right: 20px;
+	bottom: 10px;
+}
+
+#input
+{
+	width: 100%;
+
+	color: #809080;
+	background-color: #111;
+	border: none;
+	font-size: 20px;
+}
