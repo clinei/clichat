@@ -1,7 +1,7 @@
 void main()
 {
 	import clichat.frontend : Frontend;
-	auto frontend = new Frontend("127.0.0.1", 80, "/chat", "clinei.noip.me", 80, "/ws");
+	auto frontend = new Frontend("/chat", 8080);
 
 	import vibe.core.core : lowerPrivileges;
 	lowerPrivileges();

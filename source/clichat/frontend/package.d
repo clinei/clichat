@@ -10,11 +10,9 @@ class Frontend
 
 	FrontendSettings settings;
 
-	this(string address = "127.0.0.1", ushort port = 8080, string urlPrefix = "",
-	     string webSocketAddress = "127.0.0.1", ushort webSocketPort = 8080, string webSocketPrefix = "/ws")
+	this(string urlPrefix = "", ushort port = 8080)
 	{
-		auto settings = new FrontendSettings(address, port, urlPrefix,
-		                                     webSocketAddress, webSocketPort, webSocketPrefix);
+		auto settings = new FrontendSettings(urlPrefix, port);
 		this(settings);
 	}
 	this(FrontendSettings settings)
@@ -41,7 +39,7 @@ class Frontend
 		router.registerRoot(root, settings.root);
 
 		import vibe.http.websockets : handleWebSockets;
-		router.get("/ws", handleWebSockets(&backend.handleConnection));
+		router.get(settings.webSocketInfo.urlPrefix, handleWebSockets(&backend.handleConnection));
 
 		import vibe.http.fileserver : serveStaticFiles;
 		router.get("/*", serveStaticFiles("public/", settings.fileServer));
@@ -77,8 +75,7 @@ class FrontendSettings
 		       /+~ root.urlPrefix+/ ~ webSocketInfo.urlPrefix;
 	}
 
-	this(string address = "127.0.0.1", ushort port = 8080, string urlPrefix = "",
-	     string webSocketAddress = "127.0.0.1", ushort webSocketPort = 8080, string webSocketPrefix = "/ws")
+	this(string urlPrefix = "", ushort port = 8080)
 	{
 		backend = new BackendSettings();
 
@@ -92,7 +89,7 @@ class FrontendSettings
 		fileServer = new HTTPFileServerSettings;
 		fileServer.serverPathPrefix = urlPrefix;
 
-		webSocketInfo = WebSocketInfo(webSocketAddress, webSocketPort, webSocketPrefix);
+		webSocketInfo = WebSocketInfo("clinei.noip.me", 8080u, "/ws");
 	}
 }
 

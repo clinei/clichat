@@ -2,15 +2,6 @@ module clichat.backend;
 
 /// Requires cleanup
 
-alias UserID = string;
-struct Message
-{
-	string data;
-	import std.datetime : SysTime;
-	SysTime time;
-	UserID userID;
-}
-
 enum SendType
 {
 	None,
@@ -42,6 +33,15 @@ class Backend
 	alias SocketID = NetworkAddress;
 	import vibe.http.websockets : WebSocket;
 	WebSocket[SocketID] sockets;
+
+	alias UserID = string;
+	struct Message
+	{
+		string data;
+		import std.datetime : SysTime;
+		SysTime time;
+		UserID userID;
+	}
 
 	import std.uuid : UUID;
 	alias MessageID = UUID;
@@ -119,17 +119,17 @@ class Backend
 
 	string getData(T)(T sendType)
 	{
-		import std.conv : to;
 		import vibe.data.json : Json;
 		Json data = Json.emptyObject;
+
+		import std.conv : to;
 		if (sendType & SendType.UserCount)
 		{
 			data["userCount"] = userCount.to!string;
 		}
 		if (sendType & SendType.Message)
 		{
-			import std.uri : encodeComponent;
-			data["message"] = message.to!string;//.encodeComponent;
+			data["message"] = message.to!string;
 		}
 		return data.to!string;
 	}
@@ -164,7 +164,7 @@ class Backend
 			else
 			{
 				import std.conv : to;
-				error["error"] = "Too long! " ~ settings.policy.message.maxLength.to!string ~ "is max!";
+				error["error"] = "Too long! " ~ settings.policy.message.maxLength.to!string ~ " is max!";
 			}
 		}
 		if ("error" in error)
