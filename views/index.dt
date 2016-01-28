@@ -15,6 +15,6 @@ block layout.base.body
 		input(type="text")#input
 	span#userCount
 
-	//-script(src="#{settings.web.urlPrefix}/scripts/jquery.js", type="text/javascript")
+	script(src="#{settings.dataPath}/common.js", type="text/javascript")
 	script(src="#{settings.dataPath}/pusher.js", type="text/javascript")
 	script(src="#{settings.dataPath}/receiver.js", type="text/javascript")

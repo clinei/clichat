@@ -7,6 +7,12 @@ URLRouter registerPusher(URLRouter router, Pusher pusher)
 	return router.registerWebInterface(pusher, pusher.settings.webInterface);
 }
 
+enum SendType : string
+{
+	message = "message",
+	error = "error"
+}
+
 class Pusher
 {
 	PusherSettings settings;
@@ -20,8 +26,7 @@ class Pusher
 	bool shouldPush;
 
 	import clichat.backend.data : Message;
-	version(observer)
- 	Message message;
+ 	private Message message;
 
 	this()
 	{
@@ -39,10 +44,9 @@ class Pusher
 	/++
 	Needs to be hooked up to a message source
 	+/
-	version(observer)
-	void onNewMessage(Message message)
+	package void onNewMessage(Message message)
 	{
-// 		this.message = message;
+		this.message = message;
 		shouldPush = true;
 		condition.notifyAll();
 	}
@@ -58,27 +62,21 @@ class Pusher
 		synchronized(mutex)
 		{
 			import core.time : seconds;
-			condition.wait(10.seconds);
-		}
+			condition.wait(15.seconds);
 
-		if (shouldPush)
-		{
-// 			res.writeBody(message.data);
-
-			synchronized(mutex)
+			if (shouldPush)
 			{
+				auto msg = ["type": SendType.message, "data": message.data];
+
+				import vibe.data.json : serializeToJson;
+				res.writeJsonBody(msg.serializeToJson());
 				shouldPush = false;
 			}
+			else
+			{
+				res.writeVoidBody();
+			}
 		}
-		else
-		{
-			res.writeVoidBody();
-		}
-
-		// TODO: asynchrounously send message when one is received
-		import core.thread : Thread;
-		import core.time : seconds;
-		Thread.sleep(1.seconds);
 	}
 }
 
@@ -88,13 +86,9 @@ class PusherSettings
 	WebInterfaceSettings webInterface;
 	alias web = webInterface;
 
-	this()
-	{
-		webInterface = new WebInterfaceSettings;
-	}
 	this(string urlPrefix = "pusher")
 	{
-		this();
+		webInterface = new WebInterfaceSettings;
 		webInterface.urlPrefix = urlPrefix;
 	}
 }

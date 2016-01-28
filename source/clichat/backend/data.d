@@ -5,18 +5,20 @@ alias MessageData = string;
 import std.uuid : UUID;
 alias UserID = string;
 
+// revert back to SysTime when vibe.d has caught up
+alias Time = string;
+
 struct Message
 {
 	MessageData data;
 	alias data this;
 
-	import std.datetime : SysTime;
-	SysTime time;
+	Time time;
 
 	/// Unique identifier for the user that sent this message
 	UserID uid;
 
-	this(MessageData data, SysTime time, UserID uid)
+	this(MessageData data, Time time, UserID uid)
 	{
 		this.data = data;
 		this.time = time;
@@ -29,7 +31,6 @@ struct Messages
 	import vibe.db.mongo.collection : MongoCollection;
 	MongoCollection collection;
 
-	version(observer)
 	void delegate(Message)[] newMessageObservers;
 
 	this(MongoCollection collection)
@@ -51,14 +52,10 @@ struct Messages
 		// Insert into database
 		collection.insert(message.serializeToBson());
 
-		version(observer)
-		{
-			// Notify all interested parties about the newly added message
-			notifyNewMessage(message);
-		}
+		// Notify all interested parties about the newly added message
+		notifyNewMessage(message);
 	}
 
-	version(observer)
 	void notifyNewMessage(Message message)
 	{
 		foreach (observer; newMessageObservers)
@@ -73,24 +70,19 @@ struct Messages
 	+/
 	Message getLast()
 	{
-		import std.datetime : Clock;
-		return Message("Hello, world.", Clock.currTime.toUTC(), "init");
+		auto messages = collection.find().sort(["time": -1]);
 
-		static if (false)
+		if (messages.empty)
 		{
-			auto messages = collection.find().sort(["date": 1]);
-
-			if (messages.empty)
-			{
-				import std.datetime : Clock;
-				// Return a default message
-				return Message("Hello, world.", Clock.currTime.toUTC(), "init");
-			}
-			else
-			{
-				import vibe.data.bson : deserializeBson;
-				return messages.front.deserializeBson!Message;
-			}
+			import std.datetime : Clock;
+			import std.conv : to;
+			// Return a default message
+			return Message("Hello, world.", Clock.currTime.toUTC().to!string, "init");
+		}
+		else
+		{
+			import vibe.data.bson : deserializeBson;
+			return messages.front.deserializeBson!Message;
 		}
 	}
 }

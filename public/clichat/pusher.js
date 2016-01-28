@@ -10,15 +10,19 @@ function initPusher()
 
 	function loadListener()
 	{
-		console.log(this.responseText);
+		if (this.responseText)
+		{
+			var res = JSON.parse(this.responseText);
+			processResponse(res);
+		}
 		// Send another request
 		poll();
 	}
 
 	function errorListener(event)
 	{
-		// Check if server is back online in 1 second
-		setTimeout(poll, 1000);
+		// Wait a bit and then check if the server is functional again
+		setTimeout(poll, 2000);
 	}
 
 	xhr.addEventListener("load", loadListener);

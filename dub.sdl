@@ -5,7 +5,7 @@ dependency "vibe-d" version="~>0.7.26"
 configuration "debug" {
 	targetType "executable"
 	targetPath "bin/debug/"
-	dflags "-v"
+	versions "observer"
 }
 
 configuration "release" {

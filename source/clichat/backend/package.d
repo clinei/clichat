@@ -3,21 +3,6 @@ module clichat.backend;
 /// Rewrite in progress
 
 /+
-enum SendType
-{
-	None,
-	UserCount = 1<<0,
-	Message = 1<<1
-}
-
-import std.typecons : BitFlags;
-immutable auto initSend = BitFlags!SendType(SendType.UserCount, SendType.Message);
-
-auto isSendType(T, U)(T sendType, U test)
-{
-	return (sendType & test);
-}
-
 auto filterMessage(string message)
 {
 	// TODO: check redundancy, contract whitespace.

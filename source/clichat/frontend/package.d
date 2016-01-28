@@ -43,7 +43,7 @@ class Frontend
 		import clichat.frontend.pusher : registerPusher;
 		router.registerPusher(pusher);
 
-// 		backend.messages.newMessageObservers ~= &pusher.onNewMessage;
+ 		backend.messages.newMessageObservers ~= &pusher.onNewMessage;
 
 		receiver = new Receiver(settings.receiver, backend);
 		import clichat.frontend.receiver : registerReceiver;
@@ -52,11 +52,6 @@ class Frontend
 		root = new Root(settings.root, pusher);
 		import clichat.frontend.root : registerRoot;
 		router.registerRoot(root);
-
-		/+
-		import vibe.http.websockets : handleWebSockets;
-		router.get(settings.webSocketInfo.urlPrefix, handleWebSockets(&backend.handleConnection));
-		+/
 
 		import vibe.http.fileserver : serveStaticFiles;
 		router.get("/*", serveStaticFiles("public/", settings.fileServer));

@@ -5,7 +5,7 @@ function handleInput(event)
 		var elem = event.target;
 		var text = elem.value;
 
-		var message = {"data": text};
+		var message = {"type": "message", "data": text};
 		var data = JSON.stringify(message);
 
 		sendMessage(data);
@@ -22,7 +22,16 @@ function sendMessage(message)
 
 	xhr.setRequestHeader("Content-Type", "application/json");
 
-	console.log("Sending: " + message);
+	function handleResponse()
+	{
+		if (this.responseText)
+		{
+			var res = JSON.parse(this.responseText);
+			processResponse(res);
+		}
+	}
+
+	xhr.addEventListener("load", handleResponse);
 
 	xhr.send(message);
 }
@@ -31,6 +40,15 @@ function initReceiver()
 {
 	var input = document.getElementById("input");
 	input.addEventListener("keypress", handleInput);
+
+	getLast();
+}
+
+function getLast()
+{
+	var message = {"type": "getLast"};
+	var data = JSON.stringify(message);
+	sendMessage(data);
 }
 
 initReceiver();
