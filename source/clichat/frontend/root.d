@@ -1,24 +1,28 @@
 module clichat.frontend.root;
 
 import vibe.http.router : URLRouter;
-URLRouter registerRoot(URLRouter router, Root root, RootSettings settings)
+URLRouter registerRoot(URLRouter router, Root root)
 {
 	import vibe.web.web : registerWebInterface;
-	return router.registerWebInterface(root, settings);
+	return router.registerWebInterface(root, root.settings.webInterface);
 }
 
 class Root
 {
-	import clichat.frontend : FrontendSettings;
-	FrontendSettings settings;
+	RootSettings settings;
 
-	this()
+	import clichat.frontend.pusher : Pusher;
+	Pusher pusher;
+
+	this(Pusher pusher)
 	{
-		settings = new FrontendSettings;
+		settings = new RootSettings;
+		this(settings, pusher);
 	}
-	this(FrontendSettings settings)
+	this(RootSettings settings, Pusher pusher)
 	{
 		this.settings = settings;
+		this.pusher = pusher;
 	}
 
 	import vibe.web.common : path;
@@ -26,15 +30,31 @@ class Root
 	@path("/")
 	void getIndex(HTTPServerRequest req, HTTPServerResponse res)
 	{
-		struct Info
-		{
-			string title;
-		}
-		auto info = Info("CLIchat");
+		auto info = RootInfo("CLIchat");
 		import vibe.http.server : render;
 		res.render!("index.dt", settings, info);
 	}
 }
 
-import vibe.web.web : WebInterfaceSettings;
-alias RootSettings = WebInterfaceSettings;
+// Might need to move this into functions
+struct RootInfo
+{
+	string title;
+}
+
+class RootSettings
+{
+	import vibe.web.web : WebInterfaceSettings;
+	WebInterfaceSettings webInterface;
+	alias web = webInterface;
+
+	import vibe.inet.path : Path;
+	Path dataPath = "clichat";
+
+	Path pusherPath = "pusher";
+
+	this()
+	{
+		webInterface = new WebInterfaceSettings;
+	}
+}

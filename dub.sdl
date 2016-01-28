@@ -1,8 +1,14 @@
 name "clichat"
 
-dependency "vibe-d" version="0.7.26"
+dependency "vibe-d" version="~>0.7.26"
 
-configuration "app" {
+configuration "debug" {
 	targetType "executable"
-	targetPath "bin/"
+	targetPath "bin/debug/"
+	dflags "-v"
+}
+
+configuration "release" {
+	targetType "executable"
+	targetPath "bin/release/"
 }

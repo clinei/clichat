@@ -1,0 +1,6 @@
+!!! 5
+html
+	head
+		block layout.base.head
+	body
+		block layout.base.body

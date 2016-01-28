@@ -8,6 +8,12 @@ class Frontend
 	import clichat.frontend.root : Root;
 	Root root;
 
+	import clichat.frontend.pusher : Pusher;
+	Pusher pusher;
+
+	import clichat.frontend.receiver : Receiver;
+	Receiver receiver;
+
 	FrontendSettings settings;
 
 	this(string urlPrefix = "", ushort port = 8080)
@@ -33,13 +39,24 @@ class Frontend
 		import vibe.http.router : URLRouter;
 		auto router = new URLRouter;
 
-		root = new Root(settings);
+		pusher = new Pusher(settings.pusher);
+		import clichat.frontend.pusher : registerPusher;
+		router.registerPusher(pusher);
 
+// 		backend.messages.newMessageObservers ~= &pusher.onNewMessage;
+
+		receiver = new Receiver(settings.receiver, backend);
+		import clichat.frontend.receiver : registerReceiver;
+		router.registerReceiver(receiver);
+
+		root = new Root(settings.root, pusher);
 		import clichat.frontend.root : registerRoot;
-		router.registerRoot(root, settings.root);
+		router.registerRoot(root);
 
+		/+
 		import vibe.http.websockets : handleWebSockets;
 		router.get(settings.webSocketInfo.urlPrefix, handleWebSockets(&backend.handleConnection));
+		+/
 
 		import vibe.http.fileserver : serveStaticFiles;
 		router.get("/*", serveStaticFiles("public/", settings.fileServer));
@@ -51,17 +68,22 @@ class Frontend
 
 class FrontendSettings
 {
+	string urlPrefix;
+
 	import clichat.frontend.root : RootSettings;
 	RootSettings root;
+
+	import clichat.frontend.pusher : PusherSettings;
+	PusherSettings pusher;
+
+	import clichat.frontend.receiver: ReceiverSettings;
+	ReceiverSettings receiver;
 
 	import vibe.http.server : HTTPServerSettings;
 	HTTPServerSettings server;
 
 	import vibe.http.fileserver : HTTPFileServerSettings;
 	HTTPFileServerSettings fileServer;
-
-	import vibe.inet.path : Path;
-	Path dataPath = "clichat";
 
 	import clichat.backend : BackendSettings;
 	BackendSettings backend;
@@ -77,10 +99,18 @@ class FrontendSettings
 
 	this(string urlPrefix = "", ushort port = 8080)
 	{
-		backend = new BackendSettings();
+		this.urlPrefix = urlPrefix;
+
+		backend = new BackendSettings;
 
 		root = new RootSettings;
-		root.urlPrefix = urlPrefix;
+		root.webInterface.urlPrefix = urlPrefix;
+
+		pusher = new PusherSettings;
+		pusher.webInterface.urlPrefix = urlPrefix ~ "/pusher";
+
+		receiver = new ReceiverSettings;
+		receiver.webInterface.urlPrefix = urlPrefix ~ "/receiver";
 
 		server = new HTTPServerSettings;
 		server.port = port;
