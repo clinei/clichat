@@ -20,7 +20,8 @@ class Pusher
 	bool shouldPush;
 
 	import clichat.backend.data : Message;
-	Message message;
+	version(observer)
+ 	Message message;
 
 	this()
 	{
@@ -38,9 +39,10 @@ class Pusher
 	/++
 	Needs to be hooked up to a message source
 	+/
+	version(observer)
 	void onNewMessage(Message message)
 	{
-		this.message = message;
+// 		this.message = message;
 		shouldPush = true;
 		condition.notifyAll();
 	}
@@ -61,7 +63,7 @@ class Pusher
 
 		if (shouldPush)
 		{
-			res.writeBody(message.data);
+// 			res.writeBody(message.data);
 
 			synchronized(mutex)
 			{
