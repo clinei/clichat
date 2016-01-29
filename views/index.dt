@@ -1,15 +1,21 @@
-extends wslayout
-block head
+extends layout.base
+block layout.base.head
 	title= info.title
-	script(src="#{settings.root.urlPrefix}/scripts/jquery.js", type="text/javascript")
-	script(src="#{settings.dataPath}/ws.js", type="text/javascript")
 	link(rel="stylesheet", href="#{settings.dataPath}/style.css", type="text/css")
-block body
+
+block layout.base.body
 	div#data(hidden)
-		data#root= settings.root.urlPrefix
-		data#backend= settings.getWebSocketAddress()
-	div.messageFrame
+		data#rootPath= settings.web.urlPrefix
+		data#pusherPath= settings.pusherPath
+
+	div.frame.messageFrame
 		p.message#message
-	div.inputFrame
+
+	div.frame.inputFrame
 		input(type="text")#input
 	span#userCount
+
+	script(src="#{settings.dataPath}/common.js", type="text/javascript")
+	script(src="#{settings.dataPath}/pusher.js", type="text/javascript")
+	script(src="#{settings.dataPath}/receiver.js", type="text/javascript")
+	script(src="#{settings.dataPath}/main.js", type="text/javascript")

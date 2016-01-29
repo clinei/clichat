@@ -1,5 +1,11 @@
 # TODO
-+ Enable using XHR
+
+## Backend
++ userCount
++ Exception handling
+
+## Frontend
++ Automatic translation of ASCII to corresponding unicode emoji
 + Clickable links
 + 3-panel vertical chats?
 + Log of last messages that fade, with speed depending on their length

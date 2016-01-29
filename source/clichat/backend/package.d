@@ -1,22 +1,8 @@
 module clichat.backend;
 
-/// Requires cleanup
+/// Rewrite in progress
 
-enum SendType
-{
-	None,
-	UserCount = 1<<0,
-	Message = 1<<1
-}
-
-import std.typecons : BitFlags;
-immutable auto initSend = BitFlags!SendType(SendType.UserCount, SendType.Message);
-
-auto isSendType(T, U)(T sendType, U test)
-{
-	return (sendType & test);
-}
-
+/+
 auto filterMessage(string message)
 {
 	// TODO: check redundancy, contract whitespace.
@@ -24,7 +10,38 @@ auto filterMessage(string message)
 	import vibe.textfilter.html : htmlEscape;
 	return message.strip.htmlEscape;
 }
++/
 
+class Backend
+{
+	BackendSettings settings;
+
+	import vibe.db.mongo.client : MongoClient;
+	MongoClient client;
+
+	import vibe.db.mongo.database : MongoDatabase;
+	MongoDatabase db;
+
+	import clichat.backend.data : Messages;
+	Messages messages;
+
+	this(string name = "clichat", string address = "127.0.0.1")
+	{
+		import vibe.db.mongo.mongo : connectMongoDB;
+		this.client = connectMongoDB(address);
+		this.db = client.getDatabase(name);
+
+		messages = db["messages"];
+	}
+
+	import clichat.backend.data : Message;
+	void addMessage(Message message)
+	{
+		messages.add(message);
+	}
+}
+
+/+
 class Backend
 {
 	BackendSettings settings;
@@ -204,6 +221,7 @@ class Backend
 		}
 	}
 }
++/
 
 class BackendSettings
 {
