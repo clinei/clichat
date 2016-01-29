@@ -44,6 +44,7 @@ class Pusher
 	/++
 	Needs to be hooked up to a message source
 	+/
+	// gets called at the right time
 	package void onNewMessage(Message message)
 	{
 		this.message = message;
@@ -56,6 +57,7 @@ class Pusher
 	/++
 	Pushes a new message to the client when one is received
 	+/
+	// Bug cause might be in here
 	@path("")
 	void get(HTTPServerRequest req, HTTPServerResponse res)
 	{
