@@ -13,6 +13,19 @@ final class Room
 	import vibe.core.sync : ManualEvent;
 	ManualEvent messageEvent;
 
+	ManualEvent userCountEvent;
+
+	size_t userCount;
+
+	import vibe.core.core : Timer;
+	import clichat.backend.data : UserID;
+	Timer[UserID] userCountTimers;
+
+	import core.time : Duration;
+	import core.time : minutes;
+	import core.time : seconds;
+	Duration userCountDur = 5.seconds;
+
 	this(RedisDatabase database, string id)
 	{
 		this.id = id;
@@ -24,6 +37,7 @@ final class Room
 
 		import vibe.core.sync : createManualEvent;
 		this.messageEvent = createManualEvent();
+		this.userCountEvent = createManualEvent();
 	}
 
 	import clichat.backend.data : Message;
@@ -32,6 +46,30 @@ final class Room
 		import vibe.data.json : serializeToJsonString;
 		messages.insertBack(message.serializeToJsonString());
 		messageEvent.emit();
+
+		if (auto tm = message.userID in userCountTimers)
+		{
+			tm.rearm(userCountDur);
+		}
+		else
+		{
+			userCount += 1;
+
+			userCountEvent.emit();
+
+			import vibe.core.core : setTimer;
+			userCountTimers[message.userID] = setTimer(userCountDur,
+			()
+			{
+				userCount -= 1;
+
+				import std.algorithm : remove;
+				userCountTimers.remove(message.userID);
+
+				userCountEvent.emit();
+			}
+			);
+		}
 	}
 	void addMessage(string message, string userID)
 	{
@@ -57,5 +95,10 @@ final class Room
 		{
 			messageEvent.wait();
 		}
+	}
+
+	void waitForUserCount()
+	{
+		userCountEvent.wait();
 	}
 }

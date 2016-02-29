@@ -35,8 +35,8 @@ body
 #userCount
 {
 	position: absolute;
-	bottom: 0;
-	right: 4px;
+	bottom: 8pt;
+	right: 4pt;
 }
 
 .inputFrame

@@ -34,7 +34,8 @@ final class Receiver
 		auto userID = socket.request.peer;
 
 		import vibe.core.core : runTask;
-		auto writer = runTask({
+		auto writer = runTask(
+		{
 			auto next_message = r.messages.length;
 
 			while (socket.connected)
@@ -45,14 +46,29 @@ final class Receiver
 				}
 				r.waitForMessage(next_message);
 			}
-		});
+		}
+		);
 
-		while (socket.waitForData) {
+		auto userCountWriter = runTask(
+		{
+			while (socket.connected)
+			{
+				import vibe.data.json : serializeToJsonString;
+				socket.send(["userCount": r.userCount].serializeToJsonString);
+				r.waitForUserCount();
+			}
+		}
+		);
+
+		while (socket.waitForData)
+		{
 			auto message = socket.receiveText();
 			if (message.length) r.addMessage(message, userID);
 		}
 
-		writer.join(); // wait for writer task to exit
+		writer.join();
+
+		userCountWriter.join();
 	}
 }
 import vibe.web.web : WebInterfaceSettings;

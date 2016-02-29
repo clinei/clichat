@@ -1,4 +1,4 @@
-var RoomConnection = function(url, outputID, inputID)
+var RoomConnection = function(url, outputID, inputID, userCountID)
 {
 	var socket = new WebSocket("ws://" + url);
 
@@ -12,12 +12,17 @@ var RoomConnection = function(url, outputID, inputID)
 		log("Received " + url + ": " + message.data);
 		var parsed = JSON.parse(message.data);
 
-		var output = document.getElementById(outputID);
-
 		if ("data" in parsed)
 		{
+			var output = document.getElementById(outputID);
 			var msg = parsed["data"];
 			output.innerHTML = msg;
+		}
+
+		if ("userCount" in parsed)
+		{
+			var userCount = document.getElementById(userCountID);
+			userCount.innerHTML = parsed["userCount"];
 		}
 	}
 
@@ -53,8 +58,9 @@ function onReady()
 	var url = getReceiver() + "/r1";
 	var outputID = "message";
 	var inputID = "input";
+	var userCountID = "userCount";
 
-	var conn = new RoomConnection(url, outputID, inputID);
+	var conn = new RoomConnection(url, outputID, inputID, userCountID);
 }
 
 function log(text)
