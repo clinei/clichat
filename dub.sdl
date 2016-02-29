@@ -1,6 +1,6 @@
 name "clichat"
 
-dependency "vibe-d" version="0.7.26"
+dependency "vibe-d" version="0.7.28"
 
 configuration "app" {
 	targetType "executable"
