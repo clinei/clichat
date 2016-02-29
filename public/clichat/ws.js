@@ -21,7 +21,7 @@ function connect()
 {
 	if (canConnect())
 	{
-		socket = new WebSocket("ws://" + getBackend());
+		socket = new WebSocket("ws://" + getReceiver() + "/" + encodeURIComponent("r1"));
 		socket.onopen = onOpen;
 		socket.onmessage = onMessage;
 		socket.onclose = onClose;
@@ -70,13 +70,14 @@ function sendMessage(target)
 	if (canSend)
 	{
 		var elem = $('#' + target);
-		//var text = encodeURIComponent(elem.val());
 		var text = elem.val();
 		elem.val("");
-		log("Sending: " + text);
-		var msg = {"message": text};
-		var data = JSON.stringify(msg);
-		socket.send(data);
+
+		var msg = {data: text};
+		var str = JSON.stringify(msg);
+
+		log("Sending: " + str);
+		socket.send(str);
 	}
 }
 
@@ -87,15 +88,15 @@ function onOpen()
 
 function onMessage(message)
 {
-	log("Message: " + message.data);
+	log("Received: " + message.data);
 	var parsed = JSON.parse(message.data);
 	if ("userCount" in parsed)
 	{
 		$("#userCount").html(parsed["userCount"]);
 	}
-	if ("message" in parsed)
+	if ("data" in parsed)
 	{
-		var msg = parsed["message"];
+		var msg = parsed["data"];
 		$("#message").html(msg);
 		if (!visible)
 		{
@@ -121,14 +122,9 @@ function log(text)
 	console.log(text);
 }
 
-function getBackend()
+function getReceiver()
 {
-	/*
-	var href = window.location.href;
-	href = "ws://" + href.substring(href.indexOf(":") + 3) + "ws";
-	return href;
-	*/
-	return $('data#backend').html();
+	return $('data#receiver').html();
 }
 
 function getRoot()

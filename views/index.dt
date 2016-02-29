@@ -7,7 +7,7 @@ block head
 block body
 	div#data(hidden)
 		data#root= settings.root.urlPrefix
-		data#backend= settings.getWebSocketAddress()
+		data#receiver= settings.getWebSocketAddress()
 	div.messageFrame
 		p.message#message
 	div.inputFrame

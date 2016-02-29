@@ -5,6 +5,9 @@ class Frontend
 	import clichat.backend : Backend;
 	Backend backend;
 
+	import clichat.backend : Receiver;
+	Receiver receiver;
+
 	import clichat.frontend.root : Root;
 	Root root;
 
@@ -38,8 +41,10 @@ class Frontend
 		import clichat.frontend.root : registerRoot;
 		router.registerRoot(root, settings.root);
 
-		import vibe.http.websockets : handleWebSockets;
-		router.get(settings.webSocketInfo.urlPrefix, handleWebSockets(&backend.handleConnection));
+		receiver = new Receiver(this.backend);
+
+		import clichat.backend : registerReceiver;
+		router.registerReceiver(receiver, settings.receiver);
 
 		import vibe.http.fileserver : serveStaticFiles;
 		router.get("/*", serveStaticFiles("public/", settings.fileServer));
@@ -54,6 +59,9 @@ class FrontendSettings
 	import clichat.frontend.root : RootSettings;
 	RootSettings root;
 
+	import clichat.backend : ReceiverSettings;
+	ReceiverSettings receiver;
+
 	import vibe.http.server : HTTPServerSettings;
 	HTTPServerSettings server;
 
@@ -62,9 +70,6 @@ class FrontendSettings
 
 	import vibe.inet.path : Path;
 	Path dataPath = "clichat";
-
-	import clichat.backend : BackendSettings;
-	BackendSettings backend;
 
 	WebSocketInfo webSocketInfo;
 
@@ -77,10 +82,11 @@ class FrontendSettings
 
 	this(string urlPrefix = "", ushort port = 8080)
 	{
-		backend = new BackendSettings();
-
 		root = new RootSettings;
 		root.urlPrefix = urlPrefix;
+
+		receiver = new ReceiverSettings;
+		receiver.urlPrefix = root.urlPrefix ~ "/receiver";
 
 		server = new HTTPServerSettings;
 		server.port = port;
@@ -89,7 +95,7 @@ class FrontendSettings
 		fileServer = new HTTPFileServerSettings;
 		fileServer.serverPathPrefix = urlPrefix;
 
-		webSocketInfo = WebSocketInfo("clinei.noip.me", 8080u, "/ws");
+		webSocketInfo = WebSocketInfo("clinei.noip.me", 8080u, receiver.urlPrefix);
 	}
 }
 
