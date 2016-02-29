@@ -1,120 +1,60 @@
-var socket;
-var visible = true;
-$(document).ready(onReady);
+var RoomConnection = function(url, outputID, inputID)
+{
+	var socket = new WebSocket("ws://" + url);
+
+	function canSend()
+	{
+		return socket != null && socket.readyState == 1;
+	}
+
+	function onMessage(message)
+	{
+		log("Received " + url + ": " + message.data);
+		var parsed = JSON.parse(message.data);
+
+		var output = document.getElementById(outputID);
+
+		if ("data" in parsed)
+		{
+			var msg = parsed["data"];
+			output.innerHTML = msg;
+		}
+	}
+
+	socket.addEventListener("message", onMessage);
+
+	var input = document.getElementById(inputID);
+
+	function keyDown(event)
+	{
+		if (event.keyCode == 13)
+		{
+			if (canSend())
+			{
+				var text = input.value;
+
+				var msg = {data: text};
+				var str = JSON.stringify(msg);
+
+				log("Sending " + url + ": " + str);
+				socket.send(str);
+
+				input.value = "";
+			}
+		}
+	};
+
+	input.addEventListener("keydown", keyDown);
+}
+
 
 function onReady()
 {
+	var url = getReceiver() + "/r1";
+	var outputID = "message";
+	var inputID = "input";
 
-	$("#input").bind("keypress", handleInput);
-	connect();
-}
-
-function handleInput(event)
-{
-	if (event.keyCode == 13)
-	{
-		sendMessage("input");
-	}
-}
-
-function connect()
-{
-	if (canConnect())
-	{
-		socket = new WebSocket("ws://" + getReceiver() + "/" + encodeURIComponent("r1"));
-		socket.onopen = onOpen;
-		socket.onmessage = onMessage;
-		socket.onclose = onClose;
-		socket.onerror = onError;
-	}
-	else if (socket.readyState == 3)
-	{
-		connectWithTimeout();
-	}
-	else
-	{
-		log("Already connected");
-	}
-}
-
-function connectWithTimeout()
-{
- 	window.setTimeout(connect, 1000);
-}
-
-function disconnect()
-{
-	if (canSend)
-	{
-		socket.close();
-		log("Disconnected");
-	}
-	else
-	{
-		log("Not connected");
-	}
-}
-
-function canConnect()
-{
-	return socket == null || socket.readyState == 3;
-}
-
-function canSend()
-{
-	return socket != null && socket.readyState == 1;
-}
-
-function sendMessage(target)
-{
-	if (canSend)
-	{
-		var elem = $('#' + target);
-		var text = elem.val();
-		elem.val("");
-
-		var msg = {data: text};
-		var str = JSON.stringify(msg);
-
-		log("Sending: " + str);
-		socket.send(str);
-	}
-}
-
-function onOpen()
-{
-	//log("Connected");
-}
-
-function onMessage(message)
-{
-	log("Received: " + message.data);
-	var parsed = JSON.parse(message.data);
-	if ("userCount" in parsed)
-	{
-		$("#userCount").html(parsed["userCount"]);
-	}
-	if ("data" in parsed)
-	{
-		var msg = parsed["data"];
-		$("#message").html(msg);
-		if (!visible)
-		{
-			// Notify user
-			notifyNewMessage();
-		}
-	}
-}
-
-function onClose()
-{
-	//log("Connection closed");
-	connectWithTimeout();
-}
-
-function onError()
-{
-	//log("Error occurred");
+	var conn = new RoomConnection(url, outputID, inputID);
 }
 
 function log(text)
@@ -124,32 +64,12 @@ function log(text)
 
 function getReceiver()
 {
-	return $('data#receiver').html();
+	return document.getElementById("data_receiver").innerHTML;
 }
 
 function getRoot()
 {
-	return $('data#root').html();
+	return document.getElementById("data_root").innerHTML;
 }
 
-function notifyNewMessage(max, n)
-{
-	max = max | 3;
-	n = n | 0;
-	if (n < max)
-	{
-
-	}
-}
-
-function onUnfocus()
-{
-	visible = false;
-}
-function onFocus()
-{
-	visible = true;
-}
-
-$(window).blur(onUnfocus);
-$(window).focus(onFocus);
+onReady();

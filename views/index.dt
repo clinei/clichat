@@ -2,14 +2,15 @@ extends wslayout
 block head
 	title= info.title
 	script(src="#{settings.root.urlPrefix}/scripts/jquery.js", type="text/javascript")
-	script(src="#{settings.dataPath}/ws.js", type="text/javascript")
 	link(rel="stylesheet", href="#{settings.dataPath}/style.css", type="text/css")
 block body
 	div#data(hidden)
-		data#root= settings.root.urlPrefix
-		data#receiver= settings.getWebSocketAddress()
+		data#data_root= settings.root.urlPrefix
+		data#data_receiver= settings.getWebSocketAddress()
 	div.messageFrame
 		p.message#message
 	div.inputFrame
 		input(type="text")#input
 	span#userCount
+
+	script(src="#{settings.dataPath}/ws.js", type="text/javascript")
