@@ -23,8 +23,7 @@ final class Room
 
 	import core.time : Duration;
 	import core.time : minutes;
-	import core.time : seconds;
-	Duration userCountDur = 5.seconds;
+	Duration userCountDur = 2.minutes;
 
 	this(RedisDatabase database, string id)
 	{

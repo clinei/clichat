@@ -1,3 +1,15 @@
+String.prototype.replaceAll = function(search, replace) {
+	return this.replace(new RegExp(search, 'g'), replace);
+};
+
+function encode(msg) {
+	return msg.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+}
+
+function decode(msg) {
+	return msg.replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&amp;", "&");
+}
+
 var RoomConnection = function(url, outputID, inputID, userCountID)
 {
 	var socket = new WebSocket("ws://" + url);
@@ -12,14 +24,15 @@ var RoomConnection = function(url, outputID, inputID, userCountID)
 		log("Received " + url + ": " + message.data);
 		var parsed = JSON.parse(message.data);
 
-		if ("data" in parsed)
+		if (outputID != null && "data" in parsed)
 		{
 			var output = document.getElementById(outputID);
 			var msg = parsed["data"];
+			msg = encode(msg);
 			output.innerHTML = msg;
 		}
 
-		if ("userCount" in parsed)
+		if (userCountID != null && "userCount" in parsed)
 		{
 			var userCount = document.getElementById(userCountID);
 			userCount.innerHTML = parsed["userCount"];
@@ -55,12 +68,9 @@ var RoomConnection = function(url, outputID, inputID, userCountID)
 
 function onReady()
 {
-	var url = getReceiver() + "/r1";
-	var outputID = "message";
-	var inputID = "input";
-	var userCountID = "userCount";
+	var conn = new RoomConnection(getReceiver() + "/r1", "o1", "i1");
 
-	var conn = new RoomConnection(url, outputID, inputID, userCountID);
+	var conn2 = new RoomConnection(getReceiver() + "/r2", "o2", "i2");
 }
 
 function log(text)

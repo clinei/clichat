@@ -1,0 +1,4 @@
+- void inputMany(string[] ids)
+	div.inputFrame
+		- foreach (id; ids)
+			input(type="text").input(id=id)

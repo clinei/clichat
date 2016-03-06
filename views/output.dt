@@ -1,0 +1,6 @@
+- void tableOutputMany(string[] ids)
+	table.frame.outputManyFrame
+		tbody
+			- foreach (id; ids)
+				tr
+					td.output(id=id)

@@ -3,10 +3,4 @@ html
 	head
 		block head
 	body
-		- import std.datetime : StopWatch, AutoStart;
-		- auto sw = StopWatch(AutoStart.yes);
-		block content
-		- import core.time : Duration;
-		- import std.conv : to;
-		- import std.format : format;
-		p Rendered in #{"%f seconds.".format(sw.peek.to!(Duration).total!"hnsecs" / 10_000_000.0)}
+		block body

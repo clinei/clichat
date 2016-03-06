@@ -1,4 +1,4 @@
-extends wslayout
+extends layout
 block head
 	title= info.title
 	script(src="#{settings.root.urlPrefix}/scripts/jquery.js", type="text/javascript")
@@ -7,10 +7,10 @@ block body
 	div#data(hidden)
 		data#data_root= settings.root.urlPrefix
 		data#data_receiver= settings.getWebSocketAddress()
-	div.messageFrame
-		p.message#message
-	div.inputFrame
-		input(type="text")#input
+	include output
+	- tableOutputMany(["o1", "o2"]);
+	include input
+	- inputMany(["i1", "i2"]);
 	span#userCount
 
 	script(src="#{settings.dataPath}/ws.js", type="text/javascript")
