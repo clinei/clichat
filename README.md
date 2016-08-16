@@ -9,9 +9,10 @@ Employs the [vibe.d](http://vibed.org) framework for I/O.
 
 Written in [D](http://dlang.org).
 
-Currently uses WebSockets for communication, but XHR support is planned.
+Uses WebSockets for communication.
 
-Check [TODO](TODO.md) before making a feature request.
+## Contributing
+Check [TODO](TODO.md) for recommended PR items or before making a feature request.
 
 ## Building
 You're gonna need a [D compiler](http://dlang.org/download.html) and [DUB](https://github.com/D-Programming-Language/dub).
