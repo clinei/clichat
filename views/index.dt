@@ -3,10 +3,12 @@ block head
 	title= info.title
 	script(src="#{settings.root.urlPrefix}/scripts/jquery.js", type="text/javascript")
 	link(rel="stylesheet", href="#{settings.dataPath}/style.css", type="text/css")
+	link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Lato", type="text/css")
 block body
 	div#data(hidden)
 		data#data_root= settings.root.urlPrefix
 		data#data_receiver= settings.getWebSocketAddress()
+		data#data_serverURI= settings.webSocketInfo.urlPrefix
 	include output
 	- tableOutputMany(["o1", "o2"]);
 	include input

@@ -68,9 +68,11 @@ var RoomConnection = function(url, outputID, inputID, userCountID)
 
 function onReady()
 {
-	var conn = new RoomConnection(getReceiver() + "/r1", "o1", "i1");
-
-	var conn2 = new RoomConnection(getReceiver() + "/r2", "o2", "i2");
+	var conns = [];
+	for (var i = 1; i <= 2; i++)
+	{
+		conns.push(new RoomConnection(window.location.hostname + getServerURI() +"/r"+ i, "o"+ i, "i"+ i));
+	}
 }
 
 function log(text)
@@ -86,6 +88,11 @@ function getReceiver()
 function getRoot()
 {
 	return document.getElementById("data_root").innerHTML;
+}
+
+function getServerURI()
+{
+	return document.getElementById("data_serverURI").innerHTML;
 }
 
 onReady();

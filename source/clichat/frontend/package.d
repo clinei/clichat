@@ -95,7 +95,7 @@ class FrontendSettings
 		fileServer = new HTTPFileServerSettings;
 		fileServer.serverPathPrefix = urlPrefix;
 
-		webSocketInfo = WebSocketInfo("clinei.noip.me", 8080u, receiver.urlPrefix);
+		webSocketInfo = WebSocketInfo("clinei.noip.me", port, receiver.urlPrefix);
 	}
 }
 
